@@ -1,0 +1,13 @@
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+
+# Secrets and local environment files - never commit these
+.env
+.env.*
+*.pem
+*.key
+venv/
+.venv/
+# Generated digit files can be large; regenerate them with the notebook
+pi_*_digits.txt
