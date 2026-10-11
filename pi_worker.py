@@ -160,3 +160,31 @@ def calculate_pi_parallel(digits, timings=None, verbose=True, merge="tree"):
             workers=len(chunks),
         )
     return pi
+
+
+# Ramanujan's series gains log10(396^4 / 256) = log10(99^4) ~ 7.98 correct digits per term
+RAMANUJAN_DIGITS_PER_TERM = math.log10(99**4)
+
+
+def ramanujan_pi(terms):
+    """Compute pi from the first `terms` terms (n = 0 .. terms-1) of Ramanujan's 1914 series:
+
+        1/pi = (2*sqrt(2) / 9801) * sum_n (4n)! (26390n + 1103) / ((n!)^4 * 396^(4n))
+
+    Each term is built from the previous one with the ratio
+        (4n+1)(4n+2)(4n+3)(4n+4) / ((n+1)^4 * 396^4),
+    so no factorials are ever computed. Runs serially; the precision is chosen from `terms`.
+    """
+    terms = max(1, int(terms))
+    digits = terms * RAMANUJAN_DIGITS_PER_TERM + 20          # +20 digits of safety margin
+    bits = math.ceil(digits * 3.3219281) + 64
+    with gmpy2.context(precision=bits):
+        total = mpfr(0)
+        t = mpfr(1)                                          # n = 0: (0)! / (0!^4 * 396^0)
+        for n in range(terms):
+            total += t * (26390 * n + 1103)
+            num = (4 * n + 1) * (4 * n + 2) * (4 * n + 3) * (4 * n + 4)
+            den = (n + 1) ** 4 * 396 ** 4
+            t = t * num / den
+        return mpfr(9801) / (2 * gmpy2.sqrt(mpfr(2)) * total)
+

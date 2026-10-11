@@ -10,8 +10,8 @@ series for 1/π and the Chudnovsky formula, which gives about 14.18 correct digi
 
 | File | Purpose |
 |---|---|
-| `Digits_of_pi_Chudnovksy_multi_core.ipynb` | The notebook: calculate, save and verify digits; Wallis vs. Chudnovsky convergence; time-distribution benchmark |
-| `pi_worker.py` | Binary splitting (`bs_step`), the pairwise tree merge, and `calculate_pi_parallel()` with timing checkpoints |
+| `Digits_of_pi_Chudnovksy_multi_core.ipynb` | The notebook: calculate, save and verify digits; Ramanujan's series; Wallis vs. Ramanujan vs. Chudnovsky convergence; time-distribution benchmark |
+| `pi_worker.py` | Binary splitting (`bs_step`), the pairwise tree merge, `calculate_pi_parallel()` with timing checkpoints, and `ramanujan_pi()` |
 
 `pi_worker.py` must sit next to the notebook. It is a separate module because macOS starts worker
 processes with `spawn`, which cannot see functions defined in a notebook cell.
@@ -23,8 +23,13 @@ processes with `spawn`, which cannot see functions defined in a notebook cell.
    result against `gmpy2.const_pi()` and, independently, against the
    [Pi Delivery API](https://pi.delivery/) (every digit up to 200,000; a random sample of chunks above that).
    Any error is reported with its position, the calculated digit and the true digit.
-2. **Wallis vs. Chudnovsky.** Plots correct digits against the number of terms for each method.
-3. **Time distribution vs. digit scale.** Stacked bar and area charts showing how the time splits between
+2. **Ramanujan's series (1914).** Asks for the number of terms n and computes π from
+   `1/π = (2√2/9801) Σ (4n)!(26390n+1103) / ((n!)^4 396^(4n))`, which gains about 7.98 correct digits
+   per term. The result is checked against `gmpy2.const_pi()`.
+3. **Wallis vs. Ramanujan vs. Chudnovsky.** Plots correct digits against the number of terms for each method,
+   and how many terms each needs for a given accuracy (for 100 digits: Wallis about 10^100, Ramanujan 13,
+   Chudnovsky 8).
+4. **Time distribution vs. digit scale.** Stacked bar and area charts showing how the time splits between
    pool startup, parallel compute, merge, `sqrt` + divide, and string formatting.
 
 ## Method
